@@ -2,7 +2,6 @@ package com.mohammadag.headsupcallanswering;
 
 import java.util.ArrayList;
 
-import android.annotation.SuppressLint;
 import android.app.KeyguardManager;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -25,7 +24,6 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage 
 		PermissionGranter.initZygote();
 
 		XposedHelpers.findAndHookMethod(Notification.Builder.class, "build", new XC_MethodHook() {
-			@SuppressLint("NewApi")
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 				Notification.Builder builder = (Notification.Builder) param.thisObject;
