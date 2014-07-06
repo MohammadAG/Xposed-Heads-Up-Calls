@@ -10,6 +10,7 @@ import android.os.PowerManager;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
@@ -64,8 +65,25 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage 
 
 	@Override
 	public void handleLoadPackage(LoadPackageParam lpparam) throws Throwable {
-		if (!lpparam.packageName.equals("com.android.dialer"))
-			return;
+		if ("com.android.dialer".equals(lpparam.packageName)
+				|| "com.google.android.dialer".equals(lpparam.packageName)) {
+			// AOSP
+			try {
+				XposedHelpers.findAndHookMethod("com.android.incallui.CallCommandClient",
+						lpparam.classLoader, "setSystemBarNavigationEnabled", boolean.class,
+						XC_MethodReplacement.DO_NOTHING);
+			} catch (Throwable t) {
+
+			}
+		} else if ("com.android.phone".equals(lpparam.packageName)) {
+			// Xperia devices
+			try {
+				XposedHelpers.findAndHookMethod("com.android.phone.NotificationMgr$StatusBarHelper",
+						lpparam.classLoader, "updateStatusBar", boolean.class, int.class, XC_MethodReplacement.DO_NOTHING);
+			} catch (Throwable t) {
+
+			}
+		}
 	}
 
 	private static final boolean isBitwiseOred(int toCheck, int flagToCheck) {
